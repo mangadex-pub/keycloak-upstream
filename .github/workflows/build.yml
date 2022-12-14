@@ -1,0 +1,42 @@
+on: push
+name: Build
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: '11'
+
+      - name: Cache local Maven repository
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Build main codebase
+        run: mvn -f ../pom.xml clean install -DskipTestsuite -DskipExamples -DskipTests
+        working-directory: quarkus
+
+      - name: Build Quarkus release
+        run: mvn -f dist/pom.xml clean install
+        working-directory: quarkus
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: |
+            ./quarkus/dist/target/keycloak-20.0.2.tar.gz
+            ./quarkus/dist/target/keycloak-20.0.2.zip
