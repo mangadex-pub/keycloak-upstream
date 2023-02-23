@@ -129,12 +129,15 @@ public class JpaUserProvider implements UserProvider, UserCredentialStore {
                 .forEach(userModel::addRequiredAction);
         }
 
+        // Ensure case-sensitive username stored as displayname attribute
+        userModel.setSingleAttribute("displayname", username);
+
         return userModel;
     }
 
     @Override
     public UserModel addUser(RealmModel realm, String username) {
-        return addUser(realm, KeycloakModelUtils.generateId(), username.toLowerCase(), true, true);
+        return addUser(realm, KeycloakModelUtils.generateId(), username, true, true);
     }
 
     @Override
