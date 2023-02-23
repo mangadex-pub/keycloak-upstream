@@ -38,5 +38,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           files: |
-            ./quarkus/dist/target/keycloak-20.0.2.tar.gz
-            ./quarkus/dist/target/keycloak-20.0.2.zip
+            ./quarkus/dist/target/keycloak-20.0.5.tar.gz
+            ./quarkus/dist/target/keycloak-20.0.5.zip
